@@ -23,3 +23,14 @@
 client和server之间使用TCP通信
 
 -------------------
+
+> Topics and Logs
+>> * 每一个topic，整个kafka集群维护多个分区的log
+>> * 每一个分区中的record陆续append到分区中，record有序并且顺序不可变
+>> * 每一个分区就是一个a structured commit log
+>> * 分区中的record分配一个序列ID，叫做offset，是某一个分区中record的唯一标识
+>> * 所有record会被持久化一段时间，这个时间可配置
+>> * kafka的性能跟data size成常量关系，所以数据保存较长时间没有关系
+>> * consumer持有的元数据是offset
+>> * 一般情况consumer按照读取的record线性向前移动offset，但是consumer也可以按照任意顺序消费record
+>> * consumer很轻量级，一个consumer加入或者离开对集群或者其他consumer没有影响，比如可以使用命令行tail任意topic中的内容，不会影响到已有consumer
