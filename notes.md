@@ -34,3 +34,18 @@ client和server之间使用TCP通信
 >> * consumer持有的元数据是offset
 >> * 一般情况consumer按照读取的record线性向前移动offset，但是consumer也可以按照任意顺序消费record
 >> * consumer很轻量级，一个consumer加入或者离开对集群或者其他consumer没有影响，比如可以使用命令行tail任意topic中的内容，不会影响到已有consumer
+>> * 日志分区的目的，log的规模可以超过单台server的容量，一个独立的分区必须适配他所在的server，但是一个topic可以有多个分区所以可以处理任意大的数据量
+>> * 日志分区的目的，每一个分区可以作为一个并行的单元
+
+> Distribution
+>> * 集群中的server以共享的方式处理partition的数据和请求，可以配置partition在若干个server上冗余用来容错
+>> * 每一个partition有一个server作为leader，多个其他server作为follower，也可以没有follower
+>> * partition的读写请求都由leader处理，follower被动地复制leader
+>> * leader挂了从follower中的一个自动成为新的leader
+>> * 每一个server是一些partition的leader，同时这个server还是其余partition的follower，这样就实现了集群负载均衡
+
+
+> Geo-Replication
+>> * MirrorMaker 是一个工具，可以在集群间同步数据
+>> * TODO
+
