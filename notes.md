@@ -49,3 +49,21 @@ client和server之间使用TCP通信
 >> * MirrorMaker 是一个工具，可以在集群间同步数据
 >> * TODO
 
+
+> Producers
+>> * producer负责决定record投递到topic的哪个partition，可以轮询，也可以根据key匹配
+
+
+> Consumers
+>> * topic下一个record投递到每个group中的一个consumer实例
+>> * 如果所有consumer属于同一个group，record均衡投递到这些consumer
+>> * 如果每一个consumer都属于不同的group，相当于向这些consumer广播record
+>> * partition数量/consumer实例数量，用这种方式为partition分配consumer
+>> * group中有新的实例加入的话会从其他成员那里接管部分partition，group中有实例down掉会把partition分配给其他成员
+>> * record的顺序是partition维度的，全局有序可以用只设置一个partition的方式实现，但是这样group中就只有一个consumer会接收record，其他consumer空闲
+
+> Multi-tenancy
+>> * TODO
+
+
+
