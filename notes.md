@@ -65,5 +65,25 @@ client和server之间使用TCP通信
 > Multi-tenancy
 >> * TODO
 
+> Guarantees
+>> * 对于同一个partition，同一个producer发送的两个record是有序的
+>> * consumer看到record的顺序是record在log中存储的顺序
+>> * 如果topic配置了replication factor N，那么可以容忍N-1个server挂掉，不丢失record
 
 
+> Kafka as a Messaging System
+>> * 传统消息系统区分两种模式，queuing 和 publish-subscribe
+>> * kafka引入group的概念同时具备这两种模式的特点，不需要二选一
+>> * 保证顺序方面，传统消息系统只能通过exclusive consumer的方式实现有序，这丢失了并行处理能力
+>> * kafka的有序也是以单一消费方式实现，但是单一消费是partition维度，多个partition并行就实现了并行处理的能力
+
+> Kafka as a Storage System
+>> * data写入kafka是指数据写入磁盘并备份到容错节点（TODO 感觉理解不对，producer什么时候才会收到ACK？）
+
+> Kafka for Stream Processing
+>> * compute aggregations off of streams or join streams together
+>> * 有益于这些场景：处理无序数据，代码修改后重新处理，performing stateful computations（TODO）
+
+> Putting the Pieces Together
+>> * kafka既可以处理实时数据又可以处理历史数据
+>> * 可以用作低延迟的管道，也可以依赖其可靠的存储能力投递关键数据，然后结合线下系统只处理某时间段的数据，或者允许应用下线一段时间进行维护
