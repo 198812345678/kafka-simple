@@ -58,7 +58,7 @@ client和server之间使用TCP通信
 >> * topic下一个record投递到每个group中的一个consumer实例
 >> * 如果所有consumer属于同一个group，record均衡投递到这些consumer
 >> * 如果每一个consumer都属于不同的group，相当于向这些consumer广播record
->> * partition数量/consumer实例数量，用这种方式为partition分配consumer
+>> * partition数量/consumer实例数量，用这种方式为partition分配consumer, 某一时刻某个partition上的消息只有一个consumer消费者负责消费，所以consumer数量大于partition数量是浪费
 >> * group中有新的实例加入的话会从其他成员那里接管部分partition，group中有实例down掉会把partition分配给其他成员
 >> * record的顺序是partition维度的，全局有序可以用只设置一个partition的方式实现，但是这样group中就只有一个consumer会接收record，其他consumer空闲
 
