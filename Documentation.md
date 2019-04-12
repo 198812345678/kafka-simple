@@ -55,6 +55,23 @@
 * 0.11.0.0之后还提供事务提交功能，即提交到多个partition的消息同时成功同时失败
 * 并不是所有场景都需要非常强的保证，有的场景producer需要等到提交成功，可能会等上10ms；有的场景完全可以异步；有的场景只要leader节点写入成功即可
 * 从consumer的角度看，所有副本的log和offset都相同，如果一个consumer进程挂掉，由一个新的进程接替这个consumer，那新的进程需要选择一个合适的offset开始处理数据
-* 
+* consumer先记录偏移再处理消息的话，存在记录偏移成功但是消息处理失败的情况，接管任务的新consumer从记录的偏移开始处理，处理失败的消息就丢掉了，这对应最多投递一次
+* consumer先处理消息后记录偏移的话，接管任务的新consumer开始接到的消息可能是重复消息，这对应至少一次，需要幂等
+* 有且仅有一次是这样的场景，当consumer是另一个topic的producer时，可以将该consumer消费的偏移记录在一个topic，这个consumer向偏移数据topic和另一个topic投递数据放在同一个事务中，那么消费偏移和转发投递同时成同时失败（也要看事务的隔离级别），失败的不会投递给消费者
+* 事务的隔离级别也有read_uncommitted，read_committed
+* producer和consumer都有事务机制 TODO
+#### 4.7 Replication
+* 为了容灾kafka以partition维度做备份
+* 有些其他消息系统的副本机制有些缺点：副本节点流量小，带宽受限制，配置复杂；kafka默认备份不用配置，不需要副本可以把replication factor设为1
+* replication factor等于备份+leader节点的数量
+* 读写请求都会发到leader节点
+* follower上的log跟leader节点一致，但有可能落后
+* follower像普通消费者一样从leader节点消费消息，然后维护自己的log，这样可以利用kafka批量发送消息的机制同步
+* 节点存活有两个条件，1.保持和ZK的会话，2.与leader节点的同步没有落后太远
+* 满足上面两个条件的节点被维护在leader的"in sync"列表，当节点卡住或者down机或者落后太多会从"in sync"列表中删除
+* committed是指partition的所有副本都维护好了自己的log，kafka保证committed的消息不会丢失，producer可以选择等待消息committed或者不等
+* producer可以要求检查ACK（0，1，all），当all时可以配置一个收到回复的副本的最小个数，只要大于这个数字，producer就可以不等committed认为发送成功
+#####  Replicated Logs: Quorums, ISRs, and State Machines (Oh my!)
+* replicated log是这样的模型：多个节点就数据的顺序保持一致。最简单的实现方式是由一个leader决定数据的顺序，其他follower只要从leader按顺序复制数据
 > 线性访问磁盘比随机访问内存快
 > 如果使用缓存，需要

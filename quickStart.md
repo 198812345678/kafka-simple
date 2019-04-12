@@ -1,5 +1,10 @@
 # quickStart
 
+启动zk
+./zookeeper-server-start.sh ../config/zookeeper.properties
+启动broker
+./kafka-server-start.sh ../config/server.properties
+
 > kafka-server启动报java.lang.OutOfMemoryError
 >> kafka-server-start.sh中KAFKA_HEAP_OPTS="-Xmx2G -Xms512M"
 >> tmp/kafka-logs/__consumer_offset-# 占用1G+空间, 启动一个consumer后出现
