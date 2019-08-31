@@ -12,12 +12,8 @@
 * Broker Configuratio：相同的zk，不同的borkerid
 * Operating System Tuning：Virtual Memory，Disk， Networking
 
-#### Production Concerns
-* Garbage Collector Options：调整垃圾回收策略
-* Datacenter Layout
-
-### Operating System Tuning
-#### Virtual Memory
+##### Operating System Tuning
+###### Virtual Memory
 * 关于Linux swap：https://www.jianshu.com/p/73847b688728
 * https://www.cnblogs.com/yinzhengjie/p/9994207.html
 * 当物理内存不足时会通过虚拟内存做换进换出避免oom，但是这种操作会影响到Kafka各种操作的性能；再者当有数据被交换出物理内存后，如果Kafka要处理这个数据就相当于内存中没有这个数据，kafka的性能非常依赖内存缓存，这种情况下说明内存已经不足，而使用虚拟内存并不能发挥kafaka的特性
@@ -26,8 +22,15 @@
 * 配合dirty_background_ratio将vm.dirty_ratio设置大一点，可以降低同步刷脏页的次数，但是风险是造成脏页过多、同步刷脏页的阻塞时间较长。这种场景建议开启备份，防止丢消息
 * 这些参数的调整要实时观察kafka运行过程的变化，从而选定合理配置
 
-#### Disk
+###### Disk
 * 磁盘上使用的文件系统选择
 
-#### Networking
+###### Networking
 * 可以调整每个网络包接收、发送的buffer，和同时建立的网络链接数量
+
+#### Production Concerns
+* Garbage Collector Options：调整垃圾回收策略
+* Datacenter Layout
+
+#### Getting Started With Clients
+* 
